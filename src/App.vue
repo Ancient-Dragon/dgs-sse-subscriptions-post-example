@@ -11,8 +11,9 @@ import Query from './Query.vue'
 import Mutation from './Mutation.vue'
 import { createClient as createWSClient } from 'graphql-sse';
 
+// Note - you must allow your browser to let you use self-signed certificates.
 const sseClient = createWSClient({
-  url: 'http://localhost:8081/subscriptions',
+  url: 'https://localhost:8081/subscriptions',
 });
 
 

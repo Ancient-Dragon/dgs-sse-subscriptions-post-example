@@ -1,4 +1,9 @@
 <template>
+  <div>
+    <h2>Stock Data</h2>
+    <span>Stock Name: {{ stock.name }} - Price: {{ stock.price }}</span>
+  </div>
+
   <div v-if="fetching">
     Loading...
   </div>
@@ -15,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import {defineComponent, ref} from 'vue'
 import {useQuery, gql, useSubscription} from '@urql/vue'
 import { GetBooksDocument } from './generated/graphql';
 
@@ -44,15 +49,17 @@ export default defineComponent({
     const result = useQuery({
       query: GetBooksDocument
     });
-
-    useSubscription({ query: newMessages }, (response) => {
-      console.log(response);
+    const stock = ref({})
+    useSubscription({ query: newMessages }, (response, data) => {
+      console.log(data);
+      stock.value = data.stocks;
     });
 
     return {
       fetching: result.fetching,
       data: result.data,
       error: result.error,
+      stock,
     };
   }
 })
