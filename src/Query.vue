@@ -1,9 +1,10 @@
 <template>
   <div>
     <h2>Stock Data</h2>
-    <span>Stock Name: {{ stock.name }} - Price: {{ stock.price }}</span>
+    <span>Stock Name: {{ stocks.name }} - Price: {{ stocks.price }}</span>
   </div>
-
+  <button @click="pause">pause</button>
+  <button @click="resume">resume</button>
   <div v-if="fetching">
     Loading...
   </div>
@@ -20,9 +21,11 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue'
+import {defineComponent, ref, watch} from 'vue'
 import {useQuery, gql, useSubscription} from '@urql/vue'
 import { GetBooksDocument } from './generated/graphql';
+import {useLocalStorage} from "@vueuse/core";
+import {useStocks} from "./composables/UseStocks";
 
 gql`
   query GetBooks {
@@ -50,16 +53,27 @@ export default defineComponent({
       query: GetBooksDocument
     });
     const stock = ref({})
-    useSubscription({ query: newMessages }, (response, data) => {
-      console.log(data);
-      stock.value = data.stocks;
-    });
+    // const stocks = useLocalStorage('stocks', {});
+    const { pause, resume, stocks } = useStocks();
+    // const subscription = useSubscription({ query: newMessages, pause: true, }, (response, data) => {
+    //   console.log(data);
+    //   if (typeof data === 'object') {
+    //     stock.value = data.stocks;
+    //   }
+    //   return data;
+    // });
+    //
+    // const logResult = () => {
+    //   console.log(subscription)
+    // }
 
     return {
       fetching: result.fetching,
       data: result.data,
       error: result.error,
-      stock,
+      stocks,
+      pause,
+      resume
     };
   }
 })
